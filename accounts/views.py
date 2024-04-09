@@ -2,4 +2,4 @@ from django.shortcuts import render
 
 
 def register_user(request):
-    pass
+    return render(request, "accounts/register_user.html")
