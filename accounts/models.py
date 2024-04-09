@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.db.models.fields.related import OneToOneField
 
 
 class UserManager(BaseUserManager):
@@ -79,8 +80,7 @@ class User(AbstractBaseUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,
-                                blank=True, null=True)
+    user = OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     profile_picture = models.ImageField(upload_to="users/profile_pictures",
                                         blank=True, null=True)
     cover_photo = models.ImageField(upload_to="users/cover_photos",
