@@ -1,5 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
+from .forms import UserForm
+from .models import User
 
 
 def register_user(request):
-    return render(request, "accounts/register_user.html")
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.role = User.CUSTOMER
+            user.save()
+            return redirect("register_user")
+    else:
+        form = UserForm()
+
+    context = {
+        "form": form,
+    }
+    return render(request, "accounts/register_user.html", context=context)
