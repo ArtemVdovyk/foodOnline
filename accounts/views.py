@@ -1,11 +1,28 @@
 from django.shortcuts import render, redirect
 from django.contrib import auth, messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
 
 from .forms import UserForm
 from .models import User, UserProfile
 from .utils import detect_user
 from vendor.forms import VendorForm
+
+
+# Restrict the vendor from accessing the customer page
+def check_role_vendor(user):
+    if user.role == 1:
+        return True
+    else:
+        raise PermissionDenied
+
+
+# Restrict the customer from accessing the vendor page
+def check_role_customer(user):
+    if user.role == 2:
+        return True
+    else:
+        raise PermissionDenied
 
 
 def register_user(request):
@@ -128,10 +145,12 @@ def my_account(request):
 
 
 @login_required(login_url="login")
+@user_passes_test(check_role_customer)
 def customer_dashboard(request):
     return render(request, "accounts/customer_dashboard.html")
 
 
 @login_required(login_url="login")
+@user_passes_test(check_role_vendor)
 def vendor_dashboard(request):
     return render(request, "accounts/vendor_dashboard.html")
