@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 
 from .forms import UserForm
 from .models import User, UserProfile
-from .utils import detect_user
+from .utils import detect_user, send_verification_email
 from vendor.forms import VendorForm
 
 
@@ -54,6 +54,10 @@ def register_user(request):
             )
             user.role = user.CUSTOMER
             user.save()
+
+            # Send verification email
+            send_verification_email(request, user)
+
             messages.success(request,
                              "Your account has been registered successfully!")
             return redirect("register_user")
@@ -93,6 +97,10 @@ def register_vendor(request):
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
+
+            # Send verification email
+            send_verification_email(request, user)
+
             messages.success(
                 request,
                 "Your account has been registered successfully! Please wait for the approval!"
@@ -108,6 +116,11 @@ def register_vendor(request):
     }
 
     return render(request, "accounts/register_vendor.html", context=context)
+
+
+def activate(request, uidb64, token):
+    # Activate the user by setting the is_active status to True
+    return
 
 
 def login(request):
