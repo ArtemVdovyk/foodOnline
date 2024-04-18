@@ -4,6 +4,7 @@
 {% block content %}
 
 {{ user.username }}
+{{ user.get_role }}
 {% include "includes/alerts.html" %}
 
 {% endblock %}
