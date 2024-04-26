@@ -1,9 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
 
 urlpatterns = [
+    path("", views.my_account),
     path("register_user/", views.register_user, name="register_user"),
     path("register_vendor/", views.register_vendor, name="register_vendor"),
     path("login/", views.login, name="login"),
@@ -19,4 +20,5 @@ urlpatterns = [
          views.reset_password_validate,
          name="reset_password_validate"),
     path("reset_password/", views.reset_password, name="reset_password"),
+    path("vendor/", include("vendor.urls")),
 ]

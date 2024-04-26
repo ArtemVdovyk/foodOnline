@@ -10,6 +10,7 @@ from .forms import UserForm
 from .models import User, UserProfile
 from .utils import detect_user, send_verification_email
 from vendor.forms import VendorForm
+from vendor.models import Vendor
 
 
 # Restrict the vendor from accessing the customer page
