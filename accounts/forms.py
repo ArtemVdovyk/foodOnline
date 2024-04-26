@@ -1,4 +1,8 @@
+from typing import Any, Mapping
 from django import forms
+from django.core.files.base import File
+from django.db.models.base import Model
+from django.forms.utils import ErrorList
 
 from .models import User, UserProfile
 from .validators import allow_only_images_validator
@@ -30,9 +34,23 @@ class UserProfileForm(forms.ModelForm):
         widget=forms.FileInput(attrs={"class": "btn btn-info"}),
         validators=[allow_only_images_validator],
     )
+    # Make fields read-only. Option 1
+    # latitude = forms.CharField(
+    #     widget=forms.TextInput(attrs={"readonly": "readonly"})
+    # )
+    # longitude = forms.CharField(
+    #     widget=forms.TextInput(attrs={"readonly": "readonly"})
+    # )
 
     class Meta:
         model = UserProfile
         fields = ["profile_picture", "cover_photo", "address_line_1",
                   "address_line_2", "country", "state", "city", "pin_code",
                   "latitude", "longitude"]
+
+    # Make fields read-only. Option 2
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            if field in ["latitude", "longitude"]:
+                self.fields[field].widget.attrs["readonly"] = "readonly"
