@@ -39,3 +39,7 @@ def vendor_profile(request):
     }
 
     return render(request, "vendor/vendor_profile.html", context)
+
+
+def menu_builder(request):
+    return render(request, "vendor/menu_builder.html")
