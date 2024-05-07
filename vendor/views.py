@@ -145,3 +145,28 @@ def add_food(request):
         "form": form,
     }
     return render(request, "vendor/add_food.html", context=context)
+
+
+@login_required(login_url="login")
+@user_passes_test(check_role_vendor)
+def edit_food(request, pk=None):
+    food_item = get_object_or_404(FoodItem, pk=pk)
+    if request.method == "POST":
+        form = FoodItemForm(request.POST, request.FILES, instance=food_item)
+        if form.is_valid():
+            food_title = form.cleaned_data["food_title"]
+            food_item = form.save(commit=False)
+            food_item.vendor = get_vendor(request)
+            food_item.slug = slugify(food_title)
+            form.save()
+            messages.success(
+                request, "Food Item has been updated successfully!")
+            return redirect("fooditems_by_category", food_item.category.id)
+    else:
+        form = FoodItemForm(instance=food_item)
+
+    context = {
+        "form": form,
+        "food_item": food_item,
+    }
+    return render(request, "vendor/edit_food.html", context=context)
