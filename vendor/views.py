@@ -166,6 +166,8 @@ def edit_food(request, pk=None):
             return redirect("fooditems_by_category", food_item.category.id)
     else:
         form = FoodItemForm(instance=food_item)
+        form.fields["category"].queryset = Category.objects.filter(
+            vendor=get_vendor(request))
 
     context = {
         "form": form,
