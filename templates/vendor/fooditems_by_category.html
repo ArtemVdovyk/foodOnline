@@ -35,6 +35,13 @@
                                                     </a>
                                                 </td>
                                                 <td>
+                                                    {% if food.is_available %}
+                                                        <span class="badge badge-success">Available</span>
+                                                    {% else %}
+                                                        <span class="badge badge-danger">Not Available</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
                                                     <a href="{% url 'edit_food' food.id %}" style="color: unset">
                                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                                     </a>
