@@ -34,7 +34,15 @@
                                                     <small class="text-muted">{{ category.description }}</small>
                                                 </a>
                                             </td>
-                                            <td><i class="fa fa-pencil" aria-hidden="true"></i>&nbsp; <i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
+                                            <td>
+                                                <a href="{% url 'edit_category' category.id %}" style="color: unset">
+                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                </a>
+                                                &nbsp;
+                                                <a href="#">
+                                                    <i class="fa fa-trash text-danger" aria-hidden="true"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
