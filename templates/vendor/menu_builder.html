@@ -39,7 +39,7 @@
                                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                                 </a>
                                                 &nbsp;
-                                                <a href="#">
+                                                <a href="{% url 'delete_category' category.id %}" onclick="return confirm('Are you sure you want to delete this category?')">
                                                     <i class="fa fa-trash text-danger" aria-hidden="true"></i>
                                                 </a>
                                             </td>
