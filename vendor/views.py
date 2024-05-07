@@ -10,7 +10,7 @@ from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
 from accounts.views import check_role_vendor
 from menu.models import Category, FoodItem
-from menu.forms import CategoryForm
+from menu.forms import CategoryForm, FoodItemForm
 
 
 @login_required(login_url="login")
@@ -80,7 +80,7 @@ def add_category(request):
             category.vendor = get_vendor(request)
             category.slug = slugify(category_name)
             form.save()
-            messages.success(request, "Category added successfully!")
+            messages.success(request, "Category has been added successfully!")
             return redirect("menu_builder")
     else:
         form = CategoryForm()
@@ -103,7 +103,8 @@ def edit_category(request, pk=None):
             category.vendor = get_vendor(request)
             category.slug = slugify(category_name)
             form.save()
-            messages.success(request, "Category updated successfully!")
+            messages.success(
+                request, "Category has been updated successfully!")
             return redirect("menu_builder")
     else:
         form = CategoryForm(instance=category)
@@ -122,3 +123,25 @@ def delete_category(request, pk=None):
     category.delete()
     messages.success(request, "Category has been deleted successfully!")
     return redirect("menu_builder")
+
+
+@login_required(login_url="login")
+@user_passes_test(check_role_vendor)
+def add_food(request):
+    if request.method == "POST":
+        form = FoodItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            food_title = form.cleaned_data["food_title"]
+            food_item = form.save(commit=False)
+            food_item.vendor = get_vendor(request)
+            food_item.slug = slugify(food_title)
+            form.save()
+            messages.success(request, "Food Item has been added successfully!")
+            return redirect("fooditems_by_category", food_item.category.id)
+    else:
+        form = FoodItemForm()
+
+    context = {
+        "form": form,
+    }
+    return render(request, "vendor/add_food.html", context=context)

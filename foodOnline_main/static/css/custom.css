@@ -19,3 +19,7 @@
     font-size: 12px;
     cursor: pointer;
 }
+
+.field-holder {
+    margin-bottom: 8px !important;
+}
