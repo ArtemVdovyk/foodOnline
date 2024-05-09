@@ -145,9 +145,9 @@
 											<figure>
 												<a href="#">
 													{% if vendor.user_profile.profile_picture %}
-														<a href="#"><img src="{{ vendor.user_profile.profile_picture.url }}" class="img-thumb wp-post-image" alt="Profile Picture"></a>
+														<img src="{{ vendor.user_profile.profile_picture.url }}" class="img-thumb wp-post-image" alt="Profile Picture">
 													{% else %}
-														<a href="#"><img src="{% static 'images/default-profile.png' %}" class="attachment-full size-full wp-post-image" alt="Profile Picture"></a>
+														<img src="{% static 'images/default-profile.png' %}" class="img-thumb wp-post-image" alt="Profile Picture">
 													{% endif %}
 												</a>
 											</figure>
