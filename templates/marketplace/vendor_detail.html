@@ -111,7 +111,7 @@
                                                     <div class="price-holder">
                                                         <span class="price">${{ fooditem.price }}</span>
                                                         <a href="#" class="decrease_cart" style="margin-right: 28px;"><i class="icon-minus text-color"></i></a>
-                                                        <label id="qty">0</label>
+                                                        <label id="qty-{{ fooditem.id }}">0</label>
                                                         <a href="#" class="add_to_cart" data-id="{{ fooditem.id }}" data-url="{% url 'add_to_cart' fooditem.id %}"><i class="icon-plus4 text-color"></i></a>
                                                     </div>
                                                 </li>
@@ -119,6 +119,9 @@
                                             </ul>
                                         {% endfor %}
                                     </div>
+                                    {% for item in cart_items %}
+                                    <span id="qty-{{ item.food_item.id }}" class="item-qty d-none" data-qty="{{ item.quantity }}">{{ item.quantity }}</span>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
