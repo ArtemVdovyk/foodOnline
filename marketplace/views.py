@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Prefetch
 
@@ -138,3 +138,7 @@ def delete_cart(request, cart_id):
                                      "message": "Cart Item does not exist!"})
         else:
             return JsonResponse({"status": "Failed", "message": "Invalid request"})
+
+
+def search(request):
+    return HttpResponse("Search page")
