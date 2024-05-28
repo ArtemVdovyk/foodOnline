@@ -1,20 +1,19 @@
 let autocomplete;
 
 function initAutoComplete(){
-autocomplete = new google.maps.places.Autocomplete(
+    autocomplete = new google.maps.places.Autocomplete(
     document.getElementById('id_address'),
     {
         types: ['geocode', 'establishment'],
         //default in this app is "UA" - add your country code
         componentRestrictions: {'country': ['ua']},
     })
-// function to specify what should happen when the prediction is clicked
-autocomplete.addListener('place_changed', onPlaceChanged);
+    // function to specify what should happen when the prediction is clicked
+    autocomplete.addListener('place_changed', onPlaceChanged);
 }
 
-function onPlaceChanged (){
+function onPlaceChanged(){
     var place = autocomplete.getPlace();
-
     // User did not select the prediction. Reset the input field or alert()
     if (!place.geometry){
         document.getElementById('id_address').placeholder = "Start typing...";
@@ -25,7 +24,6 @@ function onPlaceChanged (){
     // get the address components and assign them to the fields
     var geocoder = new google.maps.Geocoder()
     var address = document.getElementById("id_address").value
-
     geocoder.geocode({"address": address}, function(results, status){
         if (status == google.maps.GeocoderStatus.OK){
             var latitude = results[0].geometry.location.lat();
@@ -58,20 +56,16 @@ function onPlaceChanged (){
             }else{
                 $("#id_pin_code").val("");
             }
-
         }
     }
-
 }
 
 $(document).ready(function(){
     // Add to cart
     $(".add_to_cart").on("click", function(e){
         e.preventDefault();
-
         food_id = $(this).attr("data-id");
         url = $(this).attr("data-url");
-
         $.ajax({
             type: "GET",
             url: url,
@@ -89,21 +83,17 @@ $(document).ready(function(){
             }
         })
     })
-
     // Place the cart item quantity on load
     $(".item-qty").each(function(){
         var the_id = $(this).attr("id")
         var qty = $(this).attr("data-qty")
         $("#"+the_id).html(qty)
     })
-
     // Decrease cart
     $(".decrease_cart").on("click", function(e){
         e.preventDefault();
-
         food_id = $(this).attr("data-id");
         url = $(this).attr("data-url");
-
         $.ajax({
             type: "GET",
             url: url,
@@ -121,14 +111,11 @@ $(document).ready(function(){
             }
         })
     })
-
     // Delete cart item
     $(".delete_cart").on("click", function(e){
         e.preventDefault();
-
         cart_id = $(this).attr("data-id");
         url = $(this).attr("data-url");
-
         $.ajax({
             type: "GET",
             url: url,
@@ -138,8 +125,16 @@ $(document).ready(function(){
                 }else{
                     $("#cart_counter").html(response.cart_counter["cart_count"])
                     swal(response.status, response.message, "success")
+                    removeCartItem(0, cart_id);
                 }
             }
         })
     })
+    // Delete the cart element if the qty is 0
+    function removeCartItem(cartItemQty, cart_id){
+        if(cartItemQty <= 0){
+            // remove the cart item element
+            document.getElementById("cart-item-"+cart_id).remove()
+        }
+    }
 });
