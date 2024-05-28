@@ -79,6 +79,14 @@ $(document).ready(function(){
                 }else{
                     $("#cart_counter").html(response.cart_counter["cart_count"])
                     $("#qty-"+food_id).html(response.qty);
+                    // Subtotal, tax, and grand total
+                    if(window.location.pathname == "/cart/"){
+                        applyCartAmounts(
+                            response.cart_amount["subtotal"],
+                            response.cart_amount["tax"],
+                            response.cart_amount["grand_total"]
+                        )
+                    }
                 }
             }
         })
@@ -111,6 +119,11 @@ $(document).ready(function(){
                     if(window.location.pathname == "/cart/"){
                         removeCartItem(response.qty, cart_id);
                         checkEmptyCart();
+                        applyCartAmounts(
+                            response.cart_amount["subtotal"],
+                            response.cart_amount["tax"],
+                            response.cart_amount["grand_total"]
+                        )
                     }
                 }
             }
@@ -132,6 +145,11 @@ $(document).ready(function(){
                     swal(response.status, response.message, "success")
                     removeCartItem(0, cart_id);
                     checkEmptyCart();
+                    applyCartAmounts(
+                        response.cart_amount["subtotal"],
+                        response.cart_amount["tax"],
+                        response.cart_amount["grand_total"]
+                    )
                 }
             }
         })
@@ -149,5 +167,11 @@ $(document).ready(function(){
         if(cart_counter == 0){
             document.getElementById("empty-cart").style.display = "block";
         }
+    }
+    // Apply cart amounts
+    function applyCartAmounts(subtotal, tax, grand_total){
+        $("#subtotal").html(subtotal)
+        $("#tax").html(tax)
+        $("#total").html(grand_total)
     }
 });
