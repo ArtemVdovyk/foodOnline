@@ -1,4 +1,5 @@
-from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Prefetch
 
@@ -70,7 +71,8 @@ def add_to_cart(request, food_id):
         else:
             return JsonResponse({"status": "Failed", "message": "Invalid request"})
     else:
-        return JsonResponse({"status": "login_required", "message": "Please login to continue"})
+        return JsonResponse({"status": "login_required",
+                             "message": "Please login to continue"})
 
 
 def decrease_cart(request, food_id):
@@ -102,12 +104,33 @@ def decrease_cart(request, food_id):
         else:
             return JsonResponse({"status": "Failed", "message": "Invalid request"})
     else:
-        return JsonResponse({"status": "login_required", "message": "Please login to continue"})
+        return JsonResponse({"status": "login_required",
+                             "message": "Please login to continue"})
 
 
+@login_required(login_url="login")
 def cart(request):
     cart_items = Cart.objects.filter(user=request.user)
     context = {
         "cart_items": cart_items,
     }
     return render(request, "marketplace/cart.html", context=context)
+
+
+@login_required(login_url="login")
+def delete_cart(request, cart_id):
+    if request.user.is_authenticated:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            # Check if the cart item exists
+            try:
+                cart_item = Cart.objects.get(user=request.user, id=cart_id)
+                if cart_item:
+                    cart_item.delete()
+                    return JsonResponse({"status": "Success",
+                                         "message": "Cart Item has been deleted!",
+                                         "cart_counter": get_cart_counter(request)})
+            except:
+                return JsonResponse({"status": "Failed",
+                                     "message": "Cart Item does not exist!"})
+        else:
+            return JsonResponse({"status": "Failed", "message": "Invalid request"})
