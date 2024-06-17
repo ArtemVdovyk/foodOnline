@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 
 from .context_processors import get_cart_counter, get_cart_amounts
 from .models import Cart
@@ -147,9 +147,17 @@ def search(request):
     radius = request.GET["radius"]
     keyword = request.GET["keyword"]
 
-    vendors = Vendor.objects.filter(vendor_name__icontains=keyword,
-                                    is_approved=True,
-                                    user__is_active=True)
+    # Get vendor ids that has the food item the user is looking for
+    fetch_vendors_by_fooditems = FoodItem.objects.filter(
+        food_title__icontains=keyword,
+        is_available=True
+    ).values_list("vendor", flat=True)
+
+    vendors = Vendor.objects.filter(
+        Q(id__in=fetch_vendors_by_fooditems) | Q(vendor_name__icontains=keyword,
+                                                 is_approved=True,
+                                                 user__is_active=True)
+    )
     vendor_count = vendors.count()
     context = {
         "vendors": vendors,
