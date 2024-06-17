@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 from decouple import config
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'django.contrib.gis',
     'marketplace',
     'menu',
     'vendor',
@@ -85,7 +87,7 @@ WSGI_APPLICATION = 'foodOnline_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': config("DB_ENGINE"),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config("DB_NAME"),
         'USER': config("DB_USER"),
         'PASSWORD': config("DB_PASSWORD"),
@@ -158,3 +160,10 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 # Google API configuration
 GOOGLE_API_KEY = config('GOOGLE_API_KEY')
+
+os.environ['PATH'] = os.path.join(
+    BASE_DIR, 'venv\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
+os.environ['PROJ_LIB'] = os.path.join(
+    BASE_DIR, 'venv\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
+GDAL_LIBRARY_PATH = os.path.join(
+    BASE_DIR, 'venv\Lib\site-packages\osgeo\gdal304.dll')
