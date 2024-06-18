@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Prefetch, Q
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
 
 from .context_processors import get_cart_counter, get_cart_amounts
 from .models import Cart
@@ -158,6 +160,15 @@ def search(request):
                                                  is_approved=True,
                                                  user__is_active=True)
     )
+
+    if latitude and longitude and radius:
+        pnt = GEOSGeometry(f"POINT({longitude} {latitude})", srid=4326)
+        vendors = Vendor.objects.filter(
+            Q(id__in=fetch_vendors_by_fooditems) | Q(
+                vendor_name__icontains=keyword, is_approved=True, user__is_active=True),
+            user_profile__location__distance_lte=(pnt, D(km=radius))
+        )
+
     vendor_count = vendors.count()
     context = {
         "vendors": vendors,
