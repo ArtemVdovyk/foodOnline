@@ -22,4 +22,6 @@ urlpatterns = [
          views.edit_food, name="edit_food"),
     path("menu_builder/food/delete/<int:pk>/",
          views.delete_food, name="delete_food"),
+
+    path("opening_hours/", views.opening_hours, name="opening_hours"),
 ]
