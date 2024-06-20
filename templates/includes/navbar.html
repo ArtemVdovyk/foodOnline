@@ -63,6 +63,18 @@
         var lat = position.coords.latitude
         var long = position.coords.longitude
 
-        x.value = lat + ", " + long
+        // Hit Ajax request to googlemaps api endpoint
+        // and get the location data using those lat and long
+        var GOOGLE_API_KEY = "{{ GOOGLE_API_KEY }}"
+        var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+long+"+&key="+GOOGLE_API_KEY
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function(response){
+                var current_location = response.results[0].formatted_address
+                x.value = current_location
+            }
+        })
     }
 </script>
