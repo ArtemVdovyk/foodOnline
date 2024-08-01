@@ -1,7 +1,9 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.template.defaultfilters import slugify
+from django.db import IntegrityError
 
 from .forms import VendorForm, OpeningHourForm
 from .models import Vendor, OpeningHour
@@ -198,5 +200,36 @@ def opening_hours(request):
 
 
 def add_opening_hours(request):
+    if request.user.is_authenticated:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" and request.method == "POST":
+            day = request.POST.get("day")
+            from_hour = request.POST.get("from_hour")
+            to_hour = request.POST.get("to_hour")
+            is_closed = request.POST.get("is_closed")
 
-    return HttpResponse("Add openning hour")
+            try:
+                hour = OpeningHour.objects.create(vendor=get_vendor(request),
+                                                  day=day,
+                                                  from_hour=from_hour,
+                                                  to_hour=to_hour,
+                                                  is_closed=is_closed)
+                if hour:
+                    day = OpeningHour.objects.get(id=hour.id)
+                    if day.is_closed:
+                        response = {"status": "success",
+                                    "id": hour.id,
+                                    "day": day.get_day_display(),
+                                    "is_closed": "Closed"}
+                    else:
+                        response = {"status": "success",
+                                    "id": hour.id,
+                                    "day": day.get_day_display(),
+                                    "from_hour": hour.from_hour,
+                                    "to_hour": hour.to_hour}
+
+                return JsonResponse(response)
+            except IntegrityError as e:
+                response = {"status": "failed"}
+                return JsonResponse(response)
+        else:
+            return HttpResponse("Invalid request")
