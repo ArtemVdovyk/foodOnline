@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.template.defaultfilters import slugify
@@ -198,4 +198,5 @@ def opening_hours(request):
 
 
 def add_opening_hours(request):
-    pass
+
+    return HttpResponse("Add openning hour")
