@@ -131,7 +131,8 @@
                                                         <img src="{% static 'images/razorpay_logo.png' %}" alt="RazorPay" width="100">
                                                     </label>
                                                 </div>
-                                                <button type="submit" class="btn btn-danger w-100 p-2 mt-3">PLACE ORDER</button>
+                                                <span class="text-danger" id="payment-method-error"></span>
+                                                <button onclick="return pay_method_confirm()" type="submit" class="btn btn-danger w-100 p-2 mt-3">PLACE ORDER</button>
                                             </ul>
                                         </div>
                                     </div>
@@ -144,4 +145,24 @@
         </div>
     </div>
 </div>
+<script>
+    function pay_method_confirm(){
+        var pay_method = $("input[name='payment_method']:checked").val()
+        if(!pay_method){
+            $("#payment-method-error").html("Select Payment Method!");
+            return false;
+        }else{
+            var conf = confirm("You have selected "+pay_method+" as your preferred payment method.\nClick 'OK' to contonue.")
+            if(conf == true){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+    $("input[name='payment_method']").on("change", function(){
+        $("#payment-method-error").html("");
+    })
+</script>
 {% endblock %}
