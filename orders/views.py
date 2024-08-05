@@ -1,5 +1,5 @@
 import simplejson as json
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 
 from marketplace.models import Cart
 from marketplace.context_processors import get_cart_amounts
@@ -41,9 +41,17 @@ def place_order(request):
             order.order_number = generate_order_number(order.id)
             order.save()
 
-            return redirect("place_order")
+            context = {
+                "order": order,
+                "cart_items": cart_items,
+            }
+            return render(request, "orders/place_order.html", context=context)
 
         else:
             print(form.errors)
 
     return render(request, "orders/place_order.html")
+
+
+def payments(request):
+    return HttpResponse("Payments view")

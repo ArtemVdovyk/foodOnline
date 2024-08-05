@@ -71,7 +71,26 @@
     </div>
 </div>
 <script>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     var grand_total = "{{ grand_total }}"
+    var url = "{% url 'payments' %}"
+    var order_number = "{{ order.order_number }}"
+    var csrftoken = getCookie('csrftoken');
     // Render the PayPal button into #paypal-button-container
     paypal.Buttons({
 
@@ -89,9 +108,31 @@
             return actions.order.capture().then(function(orderData){
                 console.log(orderData);
                 var transaction = orderData.purchase_units[0].payments.captures[0];
-                console.log(transaction.id)
+                var transaction_id = transaction.id
+                var status = orderData.status
+                var payment_method = "PayPal"
+                sendTransaction(transaction_id, payment_method, status);
+
             });
         }
     }).render('#paypal-button-container');
+
+    // Send the data to payments view to store in the database
+    function sendTransaction(transaction_id, payment_method, status){
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                "order_number": order_number,
+                "transaction_id": transaction_id,
+                "payment_method": payment_method,
+                "status": status,
+                "csrfmiddlewaretoken": csrftoken,
+            },
+            success: function(response){
+                console.log("response=>", response)
+            }
+        })
+    }
 </script>
 {% endblock %}
