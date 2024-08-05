@@ -11,6 +11,7 @@ from .context_processors import get_cart_counter, get_cart_amounts
 from .models import Cart
 from menu.models import Category, FoodItem
 from vendor.models import Vendor, OpeningHour
+from orders.forms import OrderForm
 
 
 def marketplace(request):
@@ -198,4 +199,8 @@ def search(request):
 
 
 def checkout(request):
-    return render(request, "marketplace/checkout.html")
+    form = OrderForm()
+    context = {
+        "form": form,
+    }
+    return render(request, "marketplace/checkout.html", context=context)
