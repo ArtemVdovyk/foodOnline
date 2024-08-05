@@ -71,31 +71,25 @@
                                     <div class="menu-itam-holder">
                                         <div id="menu-item-list-6272" class="menu-itam-list">
                                             <ul>
-                                                {% if cart_items %}
-                                                    {% for item in cart_items %}
-                                                        <li id="cart-item-{{ item.id }}">
-                                                            <div class="image-holder">
-                                                                <img src="{{ item.food_item.image.url }}" alt="">
-                                                            </div>
-                                                            <div class="text-holder">
-                                                                <h6>{{ item.food_item.food_title }}</h6>
-                                                                <span>{{ item.food_item.description }}</span>
-                                                                <a href="{% url 'vendor_detail' item.food_item.vendor.vendor_slug %}" class="badge badge-warning">{{ item.food_item.vendor }}</a>
-                                                            </div>
-                                                            <div class="quantity" style="display: inline-block; position: absolute; top: 50%; transform: translateY(-50%); margin-top: -9px;">
-                                                                <span>{{ item.quantity }} QTY</span>
-                                                            </div>
-                                                            <div class="price-holder">
-                                                                <span class="price">${{ item.food_item.price }}</span>
+                                                {% for item in cart_items %}
+                                                    <li id="cart-item-{{ item.id }}">
+                                                        <div class="image-holder">
+                                                            <img src="{{ item.food_item.image.url }}" alt="">
+                                                        </div>
+                                                        <div class="text-holder">
+                                                            <h6>{{ item.food_item.food_title }}</h6>
+                                                            <span>{{ item.food_item.description }}</span>
+                                                            <a href="{% url 'vendor_detail' item.food_item.vendor.vendor_slug %}" class="badge badge-warning">{{ item.food_item.vendor }}</a>
+                                                        </div>
+                                                        <div class="quantity" style="display: inline-block; position: absolute; top: 50%; transform: translateY(-50%); margin-top: -9px;">
+                                                            <span>{{ item.quantity }} QTY</span>
+                                                        </div>
+                                                        <div class="price-holder">
+                                                            <span class="price">${{ item.food_item.price }}</span>
 
-                                                            </div>
-                                                        </li>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    <div class="text-center p-5">
-                                                        <h3>Cart is Empty</h3>
-                                                    </div>
-                                                {% endif %}
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
                                             </ul>
                                         </div>
                                         <div>
@@ -125,6 +119,18 @@
                                                         <span id="total">{{ grand_total }}</span>
                                                     </span>
                                                 </li>
+                                                <h5>SELECT PAYMENT METHOD</h5>
+                                                <div class="payment-method">
+                                                    <label>
+                                                        <input type="radio" name="payment_method" value="PayPal">
+                                                        <img src="{% static 'images/PayPal.png' %}" alt="PayPal" width="100">
+                                                    </label>
+                                                    &emsp;
+                                                    <label>
+                                                        <input type="radio" name="payment_method" value="RazorPay">
+                                                        <img src="{% static 'images/razorpay_logo.png' %}" alt="RazorPay" width="100">
+                                                    </label>
+                                                </div>
                                                 <button type="submit" class="btn btn-danger w-100 p-2 mt-3">PLACE ORDER</button>
                                             </ul>
                                         </div>
