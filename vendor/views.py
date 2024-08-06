@@ -1,3 +1,4 @@
+import simplejson as json
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib import messages
@@ -13,6 +14,7 @@ from accounts.models import UserProfile
 from accounts.views import check_role_vendor
 from menu.models import Category, FoodItem
 from menu.forms import CategoryForm, FoodItemForm
+from orders.models import Order, OrderedFood
 
 
 @login_required(login_url="login")
@@ -243,3 +245,25 @@ def remove_opening_hours(request, pk=None):
             hour = get_object_or_404(OpeningHour, pk=pk)
             hour.delete()
             return JsonResponse({"status": "success", "id": pk})
+
+
+def order_details(request, order_number):
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(
+            order=order, fooditem__vendor=get_vendor(request))
+
+        # subtotal = 0
+        # for item in ordered_food:
+        #     subtotal += item.price * item.quantity
+
+        # tax_data = json.loads(order.tax_data)
+        context = {
+            "order": order,
+            "ordered_food": ordered_food,
+            # "subtotal": subtotal,
+            # "tax_data": tax_data,
+        }
+        return render(request, "customers/order_details.html", context=context)
+    except:
+        return redirect("vendor")
