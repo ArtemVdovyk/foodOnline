@@ -201,7 +201,14 @@ def customer_dashboard(request):
 @login_required(login_url="login")
 @user_passes_test(check_role_vendor)
 def vendor_dashboard(request):
-    return render(request, "accounts/vendor_dashboard.html")
+    vendor = Vendor.objects.get(user=request.user)
+    orders = Order.objects.filter(vendors__in=[vendor.id],
+                                  is_ordered=True).order_by("-created_at")
+    context = {
+        "orders": orders,
+        "orders_count": orders.count()
+    }
+    return render(request, "accounts/vendor_dashboard.html", context=context)
 
 
 def forgot_password(request):
