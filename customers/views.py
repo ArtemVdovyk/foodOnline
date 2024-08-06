@@ -43,3 +43,7 @@ def my_orders(request):
         "orders": orders,
     }
     return render(request, "customers/my_orders.html", context=context)
+
+
+def order_details(request, order_number):
+    return render(request, "customers/order_details.html")
