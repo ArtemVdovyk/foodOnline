@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from marketplace.models import Cart
 from marketplace.context_processors import get_cart_amounts
 from .forms import OrderForm
-from .models import Order, Payment
+from .models import Order, Payment, OrderedFood
 from .utils import generate_order_number
 
 
@@ -79,6 +79,19 @@ def payments(request):
         order.save()
 
         # Move the cart items to Order Food model
+        cart_items = Cart.objects.filter(user=request.user)
+        for item in cart_items:
+            ordered_food = OrderedFood()
+            ordered_food.order = order
+            ordered_food.payment = payment
+            ordered_food.user = request.user
+            ordered_food.fooditem = item.food_item
+            ordered_food.quantity = item.quantity
+            ordered_food.price = item.food_item.price
+            ordered_food.amount = item.food_item.price * item.quantity
+            ordered_food.save()
+
+        return HttpResponse("Saved Ordered food!")
 
         # Send order confirmation email to the customer
 

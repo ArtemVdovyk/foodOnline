@@ -129,7 +129,6 @@
 
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(orderData){
-                console.log(orderData);
                 var transaction = orderData.purchase_units[0].payments.captures[0];
                 var transaction_id = transaction.id
                 var status = orderData.status
