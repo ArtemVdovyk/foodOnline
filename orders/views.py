@@ -1,4 +1,5 @@
 import simplejson as json
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 
 from marketplace.models import Cart
@@ -6,8 +7,10 @@ from marketplace.context_processors import get_cart_amounts
 from .forms import OrderForm
 from .models import Order, Payment, OrderedFood
 from .utils import generate_order_number
+from accounts.utils import send_notification
 
 
+@login_required(login_url="login")
 def place_order(request):
     cart_items = Cart.objects.filter(user=request.user).order_by("created_at")
     cart_count = cart_items.count()
@@ -53,6 +56,7 @@ def place_order(request):
     return render(request, "orders/place_order.html")
 
 
+@login_required(login_url="login")
 def payments(request):
     # Check if request is ajax or not
     if request.headers.get("x-requested-with") == "XMLHttpRequest" and request.method == "POST":
@@ -91,9 +95,16 @@ def payments(request):
             ordered_food.amount = item.food_item.price * item.quantity
             ordered_food.save()
 
-        return HttpResponse("Saved Ordered food!")
-
         # Send order confirmation email to the customer
+        mail_subject = "Thank you for ordering with us."
+        mail_template = "orders/order_confirmation_email.html"
+        context = {
+            "user": request.user,
+            "order": order,
+            "to_email": order.email,
+        }
+        send_notification(mail_subject, mail_template, context)
+        return HttpResponse("Data Saved and email sent")
 
         # Send order recieved email to the vendor
 
