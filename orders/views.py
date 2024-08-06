@@ -3,12 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 
-from marketplace.models import Cart
+from marketplace.models import Cart, Tax
 from marketplace.context_processors import get_cart_amounts
 from .forms import OrderForm
 from .models import Order, Payment, OrderedFood
 from .utils import generate_order_number
 from accounts.utils import send_notification
+from menu.models import FoodItem
 
 
 @login_required(login_url="login")
@@ -23,7 +24,36 @@ def place_order(request):
         if i.food_item.vendor.id not in vendors_ids:
             vendors_ids.append(i.food_item.vendor.id)
 
-    subtotal = get_cart_amounts(request)["subtotal"]
+    # {"vendor_id": {"subtotal": {"tax_type": {"tax_percentage": "tax_amount"}}}}
+    get_tax = Tax.objects.filter(is_active=True)
+    subtotal = 0
+    total_data = {}
+    k = {}
+    for i in cart_items:
+        food_item = FoodItem.objects.get(pk=i.food_item.id,
+                                         vendor_id__in=vendors_ids)
+        vendor_id = food_item.vendor.id
+        if vendor_id in k:
+            subtotal = k[vendor_id]
+            subtotal += (food_item.price * i.quantity)
+            k[vendor_id] = subtotal
+        else:
+            subtotal = (food_item.price * i.quantity)
+            k[vendor_id] = subtotal
+
+        # Calculate the tax_data
+        tax_dict = {}
+        for i in get_tax:
+            tax_type = i.tax_type
+            tax_percentage = i.tax_percentage
+            tax_amount = round((tax_percentage * subtotal)/100, 2)
+            tax_dict.update({tax_type: {str(tax_percentage): str(tax_amount)}})
+
+        # Construct total_data
+        total_data.update(
+            {food_item.vendor.id: {str(subtotal): str(tax_dict)}})
+
+    # subtotal = get_cart_amounts(request)["subtotal"]
     total_tax = get_cart_amounts(request)["tax"]
     grand_total = get_cart_amounts(request)["grand_total"]
     tax_data = get_cart_amounts(request)["tax_dict"]
@@ -44,6 +74,7 @@ def place_order(request):
             order.user = request.user
             order.total = grand_total
             order.tax_data = json.dumps(tax_data)
+            order.total_data = json.dumps(total_data)
             order.total_tax = total_tax
             order.payment_method = request.POST["payment_method"]
             order.save()

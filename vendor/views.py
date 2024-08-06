@@ -253,16 +253,9 @@ def order_details(request, order_number):
         ordered_food = OrderedFood.objects.filter(
             order=order, fooditem__vendor=get_vendor(request))
 
-        # subtotal = 0
-        # for item in ordered_food:
-        #     subtotal += item.price * item.quantity
-
-        # tax_data = json.loads(order.tax_data)
         context = {
             "order": order,
             "ordered_food": ordered_food,
-            # "subtotal": subtotal,
-            # "tax_data": tax_data,
         }
         return render(request, "customers/order_details.html", context=context)
     except:
