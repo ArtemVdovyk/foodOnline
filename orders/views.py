@@ -126,7 +126,7 @@ def payments(request):
             print("Email has not beed sent! Check smpt configuration")
 
         # Clear the cart if the payment success
-        # cart_items.delete()
+        cart_items.delete()
 
         # Return back to ajax with the status success or failure
         response = {

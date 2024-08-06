@@ -12,6 +12,7 @@ from .models import User, UserProfile
 from .utils import detect_user, send_verification_email
 from vendor.forms import VendorForm
 from vendor.models import Vendor
+from orders.models import Order
 
 
 # Restrict the vendor from accessing the customer page
@@ -187,7 +188,12 @@ def my_account(request):
 @login_required(login_url="login")
 @user_passes_test(check_role_customer)
 def customer_dashboard(request):
-    return render(request, "accounts/customer_dashboard.html")
+    orders = Order.objects.filter(user=request.user, is_ordered=True)[:5]
+    context = {
+        "orders": orders,
+        "orders_count": orders.count(),
+    }
+    return render(request, "accounts/customer_dashboard.html", context=context)
 
 
 @login_required(login_url="login")
