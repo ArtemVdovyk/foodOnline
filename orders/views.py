@@ -1,6 +1,7 @@
 import simplejson as json
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 
 from marketplace.models import Cart
 from marketplace.context_processors import get_cart_amounts
@@ -125,7 +126,17 @@ def payments(request):
             print("Email has not beed sent! Check smpt configuration")
 
         # Clear the cart if the payment success
-        cart_items.delete()
+        # cart_items.delete()
 
         # Return back to ajax with the status success or failure
+        response = {
+            "order_number": order_number,
+            "transaction_id": transaction_id
+        }
+        return JsonResponse(response)
+
     return HttpResponse("Payments view")
+
+
+def order_complete(request):
+    return render(request, "orders/order_complete.html")

@@ -114,6 +114,7 @@
     var url = "{% url 'payments' %}"
     var order_number = "{{ order.order_number }}"
     var csrftoken = getCookie('csrftoken');
+    var order_complete_url = "{% url 'order_complete' %}"
     // Render the PayPal button into #paypal-button-container
     paypal.Buttons({
 
@@ -153,6 +154,7 @@
             },
             success: function(response){
                 console.log("response=>", response)
+                window.location.href = order_complete_url+"?order_no="+response.order_number+"&trans_id="+response.transaction_id
             }
         })
     }
