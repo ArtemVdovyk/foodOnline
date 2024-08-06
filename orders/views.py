@@ -103,12 +103,29 @@ def payments(request):
             "order": order,
             "to_email": order.email,
         }
-        send_notification(mail_subject, mail_template, context)
-        return HttpResponse("Data Saved and email sent")
+        try:
+            send_notification(mail_subject, mail_template, context)
+        except:
+            print("Email has not beed sent! Check smpt configuration")
 
         # Send order recieved email to the vendor
+        mail_subject = "You have recieved a new order."
+        mail_template = "orders/new_order_recieved_email.html"
+        to_emails = []
+        for i in cart_items:
+            if i.food_item.vendor.user.email not in to_emails:
+                to_emails.append(i.food_item.vendor.user.email)
+        context = {
+            "order": order,
+            "to_email": to_emails,
+        }
+        try:
+            send_notification(mail_subject, mail_template, context)
+        except:
+            print("Email has not beed sent! Check smpt configuration")
 
         # Clear the cart if the payment success
+        cart_items.delete()
 
         # Return back to ajax with the status success or failure
     return HttpResponse("Payments view")
