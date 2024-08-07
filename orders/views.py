@@ -2,6 +2,7 @@ import simplejson as json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
+from django.contrib.sites.shortcuts import get_current_site
 
 from marketplace.models import Cart, Tax
 from marketplace.context_processors import get_cart_amounts
@@ -136,10 +137,14 @@ def payments(request):
         # Send order confirmation email to the customer
         mail_subject = "Thank you for ordering with us."
         mail_template = "orders/order_confirmation_email.html"
+
+        ordered_food = OrderedFood.objects.filter(order=order)
         context = {
             "user": request.user,
             "order": order,
             "to_email": order.email,
+            "ordered_food": ordered_food,
+            "domain": get_current_site(request),
         }
         try:
             send_notification(mail_subject, mail_template, context)
