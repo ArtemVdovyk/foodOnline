@@ -4,7 +4,7 @@
 {% block content %}
 {% include "includes/alerts.html" %}
 <div class="main-section">
-    {% include "invludes/cover.html" %}
+    {% include "includes/cover.html" %}
     <div class="page-section account-header buyer-logged-in">
         <div class="container">
             <div class="row">
@@ -90,7 +90,7 @@
                                                             TOTAL
                                                             <span class="price float-right">
                                                                 <span class="currency">$</span>
-                                                                <span id="total">{{ order.total }}</span>
+                                                                <span id="total">{{ grand_total }}</span>
                                                             </span>
                                                         </li>
                                                     </ul>
