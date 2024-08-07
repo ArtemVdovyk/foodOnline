@@ -8,7 +8,7 @@ from marketplace.models import Cart, Tax
 from marketplace.context_processors import get_cart_amounts
 from .forms import OrderForm
 from .models import Order, Payment, OrderedFood
-from .utils import generate_order_number
+from .utils import generate_order_number, order_total_by_vendor
 from accounts.utils import send_notification
 from menu.models import FoodItem
 
@@ -166,14 +166,24 @@ def payments(request):
         for i in cart_items:
             if i.food_item.vendor.user.email not in to_emails:
                 to_emails.append(i.food_item.vendor.user.email)
-        context = {
-            "order": order,
-            "to_email": to_emails,
-        }
-        try:
-            send_notification(mail_subject, mail_template, context)
-        except:
-            print("Email has not beed sent! Check smpt configuration")
+
+                ordered_food_to_vendor = OrderedFood.objects.filter(
+                    order=order,
+                    fooditem__vendor=i.food_item.vendor
+                )
+
+                context = {
+                    "order": order,
+                    "to_email": i.food_item.vendor.user.email,
+                    "ordered_food_to_vendor": ordered_food_to_vendor,
+                    "vendor_subtotal": order_total_by_vendor(order, i.food_item.vendor.id)["subtotal"],
+                    "tax_data": order_total_by_vendor(order, i.food_item.vendor.id)["tax_dict"],
+                    "vendor_grand_total": order_total_by_vendor(order, i.food_item.vendor.id)["grand_total"],
+                }
+                try:
+                    send_notification(mail_subject, mail_template, context)
+                except:
+                    print("Email has not beed sent! Check smpt configuration")
 
         # Clear the cart if the payment success
         cart_items.delete()
